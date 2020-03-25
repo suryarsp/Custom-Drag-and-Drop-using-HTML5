@@ -1,8 +1,11 @@
-import React from 'react';
+import * as React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { UpperCaseName } from './createHoc';
 
-function App() {
+class App extends React.Component {
+
+  public render() {
   return (
     <div className="App">
       <header className="App-header">
@@ -16,11 +19,13 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Hi
         </a>
+        <UpperCaseName> Drag </UpperCaseName>
       </header>
     </div>
   );
+}
 }
 
 export default App;
