@@ -11,3 +11,39 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.drag-item {
+  height: 60px;
+  background-color: #CDCDCD;
+  margin-bottom: 1px;
+  cursor: pointer;
+  padding: 0px;
+}
+.drag-item span {
+  display: block;
+}
+.drag-top {
+  background-color: rgba(255, 0, 0, 0.25);
+  height: 15px;
+}
+.drag-top.active {
+  background-color: red;
+  color: #FFF;
+}
+.drag-item-inner {
+  background-color: rgba(0, 0, 255, 0.25);
+  padding-left: 15px;
+  height: 30px;
+}
+.drag-item-inner.active {
+  background-color: blue;
+  color: #FFF;
+}
+.drag-bottom {
+  background-color: rgba(0, 128, 0, 0.25);
+  height: 15px;
+}
+.drag-bottom.active {
+  background-color: green;
+  color: #FFF;
+}

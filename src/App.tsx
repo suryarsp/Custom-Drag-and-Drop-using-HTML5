@@ -1,27 +1,21 @@
 import * as React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { UpperCaseName } from './createHoc';
 
+import { mockItems} from './mockData'; 
+import DragDrop from './DragDrop/DragDrop';
+require('./bootstrap.css');
 class App extends React.Component {
 
   public render() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Hi
-        </a>
-        <UpperCaseName> Drag </UpperCaseName>
+        <DragDrop 
+        data={mockItems} 
+        isDragAllowed={true} 
+        isDropAllowed={true } 
+        onDrop = { (source, destination) => console.log('s-', source, ',d-', destination)}/> 
       </header>
     </div>
   );
