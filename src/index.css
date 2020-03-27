@@ -13,7 +13,7 @@ code {
 }
 
 .drag-item {
-  height: 60px;
+  height: auto;
   background-color: #CDCDCD;
   margin-bottom: 1px;
   cursor: pointer;
@@ -47,3 +47,18 @@ code {
   background-color: green;
   color: #FFF;
 }
+
+.drag-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  text-align: center;
+  background: black;
+  display: inline-block;
+  transform: translate(90%, -50%);
+  display: none;
+}
+
+.active .drag-over {
+  display: block;
+} 

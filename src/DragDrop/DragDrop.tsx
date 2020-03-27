@@ -1,25 +1,72 @@
 import { DragDropHOC } from "../createHoc";
 import * as React from "react";
-import { Item } from "../models";
+import { Item, IDragOverData } from "../models";
 import { IDragDropProps } from "./IDragDropProps";
 import { IDragDropState } from "./IDragDropState";
 
+const POS_INSIDE = 'inside';
+const POS_TOP = 'top';
+const POS_BOTTOM = 'bottom';
+
 class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
-  private source: Object = {};
-  private destination: Object = {};
+  public source : any;
+  public destination: any;
+  public tooltip = '';
+
+  constructor(props: IDragDropProps) {
+    super(props);
+    this.state = {
+      sourceDragTooltip : props.sourceDragTooltip ? props.sourceDragTooltip : 'Drag',
+      destionationDropTooltip: props.destionationDropTootip ? props.destionationDropTootip : 'into',
+      tooltip: ''
+    };
+  }
   public componentDidMount() {}
 
-  private onDragOver(event: React.DragEvent<Element>) {
+  private onDragOver(event: any, data: IDragOverData) {
     if (!this.props.isDropAllowed) {
       event.dataTransfer.dropEffect = "none";
     }
+
+    const { position, item} = data;
+    if(this.source['id'] === item['id']) {
+      return;
+    }
+    this.setState({ tooltip: this.getTooltip(position, this.source, item) });
+    debugger;
+    event.target.classList.add('active');
     event.preventDefault();
   }
 
-  private onDragStart(event: React.DragEvent<Element>, source: Object) {
-    this.source = source;
-    event.dataTransfer.setData("text/plain", JSON.stringify(source));
+  private onDragStart(event: React.DragEvent<Element>, sourceData: any) {
+    this.source = sourceData;
+    event.dataTransfer.setData("text/plain", JSON.stringify(sourceData));
     event.dataTransfer.effectAllowed = "move";
+  }
+
+  private getTooltip(position: string, source: any, destination: any) : string{
+    let tooltip = '';
+    const { sourceDragTooltip} = this.state;
+
+    switch(position) {
+
+      case POS_TOP: 
+        tooltip = `${sourceDragTooltip} ${source.name} above ${destination.name}`;
+      break;
+
+      case POS_INSIDE : 
+        tooltip = `${sourceDragTooltip} ${source.name} into ${destination.name}`
+      break;
+
+      case POS_BOTTOM: 
+        tooltip = `${sourceDragTooltip} ${source.name} below ${destination.name}`
+      
+      break;
+
+      default: 
+        tooltip = '';
+    }
+    return tooltip;
   }
 
   private onDrop(event: any, destination: Object) {
@@ -29,15 +76,12 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
     event.preventDefault();
   }
 
-  private onDragLeave(e: any) {
-    this.resetDefault();
-  }
-
   private onDragEnter(e: React.DragEvent<Element>) {
     e.preventDefault();
   }
 
   private onDragEnd(e: React.DragEvent<Element>) {
+    console.log('Drag End');
     this.resetDefault();
   }
 
@@ -54,15 +98,17 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
         <div className="container">
           {this.props.data.map((item, index) => (
             <div className="row"  key={item.id.toString()}>
-              <div className="col drag-item"  key={item.id.toString()}>
+              <div className="col drag-item">
                 {index === 0 ? (
                   <span
                     className="drag-top"
                     id={`top-${item.id}`}
                     key={`top-${item.id}`}
-                    onDragOver={this.onDragOver.bind(this)}
-                    onDrop={e => this.onDrop(e, { pos: 'top', item})}
-                  ></span>
+                    onDragOver={e => this.onDragOver(e, {position: POS_TOP, item})}
+                    onDrop={e => this.onDrop(e, { position: POS_TOP, item})}
+                  >
+                    <span className="drag-over">{this.state.tooltip}</span>
+                  </span>
                 ) : null}
                 <span
                   className="drag-item-inner"
@@ -70,19 +116,21 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
                   id={item.id.toString()}
                   onDragStart={e => this.onDragStart(e, item)}
                   draggable={this.props.isDragAllowed}
-                  onDragOver={this.onDragOver.bind(this)}
-                  onDrop={e => this.onDrop(e, { pos: 'inside', item})}
+                  onDragOver={e => this.onDragOver(e,{ position: POS_INSIDE, item})}
+                  onDrop={e => this.onDrop(e, { position: POS_INSIDE, item})}
                   onDragEnd={this.onDragEnd.bind(this)}
-                  onDragLeave = {this.onDragLeave.bind(this)}
                 >
                   {item.name}
+                  <span className="drag-over">{this.state.tooltip}</span>
                 </span>
                   <span
                     className="drag-bottom"
                     key={`bottom-${item.id}`}
-                    onDragOver={this.onDragOver.bind(this)}
-                    onDrop={e => this.onDrop(e, { pos: 'bottom', item})}
-                  ></span>
+                    onDragOver={e => this.onDragOver(e, { position: POS_BOTTOM, item})}
+                    onDrop={e => this.onDrop(e, { position: POS_BOTTOM, item})}
+                  >
+                    <span className="drag-over">{this.state.tooltip}</span>
+                  </span>
               </div>
             </div>
           ))}

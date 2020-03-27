@@ -4,5 +4,7 @@ export interface IDragDropProps {
     data: Item[];
     isDragAllowed: boolean;
     isDropAllowed: boolean;
+    sourceDragTooltip: string;
+    destionationDropTootip: string;
     onDrop: (source: any, destination: any) => void;
   }

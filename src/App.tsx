@@ -15,6 +15,8 @@ class App extends React.Component {
         data={mockItems} 
         isDragAllowed={true} 
         isDropAllowed={true } 
+        sourceDragTooltip ="Move"
+        destionationDropTootip="to"
         onDrop = { (source, destination) => console.log('s-', source, ',d-', destination)}/> 
       </header>
     </div>
