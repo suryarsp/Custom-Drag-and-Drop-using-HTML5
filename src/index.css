@@ -12,51 +12,66 @@ code {
     monospace;
 }
 
+.container {
+  border-top: 1px solid #f3f2f2; 
+}
+
 .drag-item {
   height: auto;
-  background-color: #CDCDCD;
   margin-bottom: 1px;
   cursor: pointer;
   padding: 0px;
+  font-size: 0.9rem;
+  border: 1px solid #f3f2f2;
+  border-top: none;
 }
-.drag-item span {
-  display: block;
+
+.drag-item span.drag-top,
+.drag-item span.drag-item-inner,
+.drag-item span.drag-bottom
+ {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .drag-top {
-  background-color: rgba(255, 0, 0, 0.25);
   height: 15px;
 }
+
 .drag-top.active {
-  background-color: red;
-  color: #FFF;
+  background-color: #adadad;
 }
+
 .drag-item-inner {
-  background-color: rgba(0, 0, 255, 0.25);
   padding-left: 15px;
+  color: #000;
   height: 30px;
 }
+
 .drag-item-inner.active {
-  background-color: blue;
-  color: #FFF;
+  background-color: #c0c0c1;
 }
+
 .drag-bottom {
-  background-color: rgba(0, 128, 0, 0.25);
   height: 15px;
 }
+
 .drag-bottom.active {
-  background-color: green;
-  color: #FFF;
+  background-color: #adadad;
 }
 
 .drag-over {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  bottom: 18px;
+  right: 18px;
   text-align: center;
-  background: black;
-  display: inline-block;
-  transform: translate(90%, -50%);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 5px;
   display: none;
+  width: 230px;
+  color: #FFF;
 }
 
 .active .drag-over {

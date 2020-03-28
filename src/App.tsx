@@ -1,10 +1,9 @@
 import * as React from 'react';
 import logo from './logo.svg';
 import './App.css';
-
 import { mockItems} from './mockData'; 
 import DragDrop from './DragDrop/DragDrop';
-require('./bootstrap.css');
+
 class App extends React.Component {
 
   public render() {

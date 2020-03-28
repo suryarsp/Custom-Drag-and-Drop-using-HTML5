@@ -33,7 +33,6 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
       return;
     }
     this.setState({ tooltip: this.getTooltip(position, this.source, item) });
-    debugger;
     event.target.classList.add('active');
     event.preventDefault();
   }
