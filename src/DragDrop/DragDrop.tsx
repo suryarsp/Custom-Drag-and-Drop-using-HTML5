@@ -3,10 +3,9 @@ import * as React from "react";
 import { Item, IDragOverData } from "../models";
 import { IDragDropProps } from "./IDragDropProps";
 import { IDragDropState } from "./IDragDropState";
+import { PositionTypes } from "../models/enums/PositionTypes";
 
-const POS_INSIDE = 'inside';
-const POS_TOP = 'top';
-const POS_BOTTOM = 'bottom';
+
 
 class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
   public source : any;
@@ -28,11 +27,11 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
       event.dataTransfer.dropEffect = "none";
     }
 
-    const { position, item} = data;
+    const { position: positionType, item} = data;
     if(this.source['id'] === item['id']) {
       return;
     }
-    this.setState({ tooltip: this.getTooltip(position, this.source, item) });
+    this.setState({ tooltip: this.getTooltip(positionType, this.source, item) });
     event.target.classList.add('active');
     event.preventDefault();
   }
@@ -43,21 +42,21 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
     event.dataTransfer.effectAllowed = "move";
   }
 
-  private getTooltip(position: string, source: any, destination: any) : string{
+  private getTooltip(positionType: PositionTypes, source: any, destination: any) : string{
     let tooltip = '';
     const { sourceDragTooltip} = this.state;
 
-    switch(position) {
+    switch(positionType) {
 
-      case POS_TOP: 
+      case PositionTypes.TOP: 
         tooltip = `${sourceDragTooltip} ${source.name} above ${destination.name}`;
       break;
 
-      case POS_INSIDE : 
+      case PositionTypes.INSIDE : 
         tooltip = `${sourceDragTooltip} ${source.name} into ${destination.name}`
       break;
 
-      case POS_BOTTOM: 
+      case PositionTypes.BELOW : 
         tooltip = `${sourceDragTooltip} ${source.name} below ${destination.name}`
       
       break;
@@ -79,9 +78,13 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
     e.preventDefault();
   }
 
-  private onDragEnd(e: React.DragEvent<Element>) {
+  private onDragEnd(e: any) {
     console.log('Drag End');
     this.resetDefault();
+  }
+
+  private onDragLeave(e: any) {
+    
   }
 
   private resetDefault() {
@@ -103,8 +106,8 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
                     className="drag-top"
                     id={`top-${item.id}`}
                     key={`top-${item.id}`}
-                    onDragOver={e => this.onDragOver(e, {position: POS_TOP, item})}
-                    onDrop={e => this.onDrop(e, { position: POS_TOP, item})}
+                    onDragOver={e => this.onDragOver(e, {position: PositionTypes.TOP, item})}
+                    onDrop={e => this.onDrop(e, { position: PositionTypes.TOP, item})}
                   >
                     <span className="drag-over">{this.state.tooltip}</span>
                   </span>
@@ -115,8 +118,8 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
                   id={item.id.toString()}
                   onDragStart={e => this.onDragStart(e, item)}
                   draggable={this.props.isDragAllowed}
-                  onDragOver={e => this.onDragOver(e,{ position: POS_INSIDE, item})}
-                  onDrop={e => this.onDrop(e, { position: POS_INSIDE, item})}
+                  onDragOver={e => this.onDragOver(e,{ position: PositionTypes.INSIDE, item})}
+                  onDrop={e => this.onDrop(e, { position: PositionTypes.INSIDE, item})}
                   onDragEnd={this.onDragEnd.bind(this)}
                 >
                   {item.name}
@@ -125,8 +128,8 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
                   <span
                     className="drag-bottom"
                     key={`bottom-${item.id}`}
-                    onDragOver={e => this.onDragOver(e, { position: POS_BOTTOM, item})}
-                    onDrop={e => this.onDrop(e, { position: POS_BOTTOM, item})}
+                    onDragOver={e => this.onDragOver(e, { position: PositionTypes.BELOW, item})}
+                    onDrop={e => this.onDrop(e, { position: PositionTypes.BELOW, item})}
                   >
                     <span className="drag-over">{this.state.tooltip}</span>
                   </span>

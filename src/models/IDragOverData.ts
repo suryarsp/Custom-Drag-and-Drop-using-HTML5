@@ -1,4 +1,6 @@
+import { PositionTypes } from "./enums/PositionTypes";
+
 export interface IDragOverData {
-    position: string;
+    position: PositionTypes;
     item: any;
 }

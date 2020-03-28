@@ -72,6 +72,7 @@ code {
   display: none;
   width: 230px;
   color: #FFF;
+  display: none;
 }
 
 .active .drag-over {
