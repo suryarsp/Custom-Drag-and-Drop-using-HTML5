@@ -37,9 +37,17 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
     this.setState({ tooltip: this.getTooltip(position, source.data, item) });
 
     // Add rules to show/hide the tooltip based on hovering the drop container
+      let activeTooltips = document.querySelectorAll('.active');
 
-
-    event.target.classList.add("active");
+      for(let i = 0; i < activeTooltips.length; i++) {
+        activeTooltips[i].classList.remove('active');
+      } 
+      if(event.target.nextSibling) {
+        if(event.target.nextSibling.classList.contains('drag-top') ||
+        event.target.nextSibling.classList.contains('drag-item-inner') || 
+        event.target.nextSibling.classList.contains('drag-bottom'))
+        event.target.nextSibling.classList.add("active");
+      }
     event.preventDefault();
   }
 
@@ -97,6 +105,11 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
   private onDragEnd(e: any) {
     console.log("Drag End");
     this.resetDefault();
+    let activeTooltips = document.querySelectorAll('.active');
+
+    for(let i = 0; i < activeTooltips.length; i++) {
+      activeTooltips[i].classList.remove('active');
+    } 
   }
 
   private resetDefault() {
@@ -112,7 +125,7 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
 
         {index === 0 && (
           <tr
-            className="drag-top drag-over"
+            className="drag-top"
             id={`top-${data.id}`}
             key={`top-${data.id}`}
             onDragOver={e =>
@@ -130,13 +143,13 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
               })
             }
           >
-            <td  colSpan={columns.length - 1}>{this.state.tooltip}</td>
+            <td className="drag-over" colSpan={columns.length - 1}>{this.state.tooltip}</td>
           </tr>
         )}
 
         {/* Content */}
         <tr
-          className="gridRow"
+          className="gridRow drag-item-inner"
           id={data.id}
           key={data.id}
           draggable={this.props.isDragAllowed}
@@ -157,14 +170,24 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
           }
           onDragEnd={this.onDragEnd.bind(this)}
         >
-          {columns.map(col => (
-            <td key={col.name} className="gridCell">{data[col.name]}</td>
+          
+          {columns.map((col, index) => (
+
+            <td key={col.name} className="gridCell">
+              {data[col.name]}
+              {
+                index === 0 && (<span className="drag-over">
+                { this.state.tooltip}
+              </span>)
+              }
+              </td>
           ))}
+          
         </tr>
 
         {/* Bottom Drop Container */}
         <tr
-          className="drag-bottom drag-over"
+          className="drag-bottom"
           key={`bottom-${data.id}`}
           onDragOver={e =>
             this.onDragOver(e, {
@@ -181,7 +204,7 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
             })
           }
         >
-          <td colSpan={columns.length - 1}>{this.state.tooltip}</td>
+          <td className="drag-over" colSpan={columns.length - 1}>{this.state.tooltip}</td>
         </tr>
       </>
     );

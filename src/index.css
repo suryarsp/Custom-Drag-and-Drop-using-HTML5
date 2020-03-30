@@ -106,3 +106,7 @@ code {
   overflow: hidden;
   width: calc(100% / 7);
 }
+
+tr {
+  position: relative;
+}
