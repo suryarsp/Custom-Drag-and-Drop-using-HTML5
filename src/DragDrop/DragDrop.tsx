@@ -1,15 +1,17 @@
+
+
 import { DragDropHOC } from "../createHoc";
 import * as React from "react";
 import { Item, IDragOverData } from "../models";
 import { IDragDropProps } from "./IDragDropProps";
 import { IDragDropState } from "./IDragDropState";
 import { PositionTypes } from "../models/enums/PositionTypes";
+import { IDropData } from "../models/IDropData";
 
 
-
+let source : { index: number, data: any};
+let destination : { index: number, data: any};
 class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
-  public source : any;
-  public destination: any;
   public tooltip = '';
 
   constructor(props: IDragDropProps) {
@@ -27,17 +29,20 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
       event.dataTransfer.dropEffect = "none";
     }
 
-    const { position: positionType, item} = data;
-    if(this.source['id'] === item['id']) {
+    const { position , item} = data;
+    if(source.data['id'] === item['id']) {
       return;
     }
-    this.setState({ tooltip: this.getTooltip(positionType, this.source, item) });
+    this.setState({ tooltip: this.getTooltip(position, source, item) });
     event.target.classList.add('active');
     event.preventDefault();
   }
 
-  private onDragStart(event: React.DragEvent<Element>, sourceData: any) {
-    this.source = sourceData;
+  private onDragStart(event: React.DragEvent<Element>, sourceData: any, sourceIndex: number) {
+    source = {
+      index: sourceIndex,
+      data: this.props.data
+    }
     event.dataTransfer.setData("text/plain", JSON.stringify(sourceData));
     event.dataTransfer.effectAllowed = "move";
   }
@@ -67,10 +72,9 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
     return tooltip;
   }
 
-  private onDrop(event: any, destination: Object) {
-    this.destination = destination;
-    this.source = JSON.parse(event.dataTransfer.getData("text/plain"));
-    this.props.onDrop(this.source, this.destination);
+  private onDrop(event: any, destinationData: IDropData) {
+    // source = JSON.parse(event.dataTransfer.getData("text/plain"));
+    this.props.onDrop(source, destinationData);
     event.preventDefault();
   }
 
@@ -88,14 +92,25 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
   }
 
   private resetDefault() {
-    this.source = {};
-    this.destination = {};
+    source = null;
+    destination = null;
   }
 
   public render() {
+    const { data , index} = this.props;
     return (
       <>
-        <h1 className="text-center mt-3">Drag and Drop</h1>
+      <div
+      id={data.id.toString()}
+      key={data.id}
+      draggable={this.props.isDragAllowed}
+      onDragStart={e => this.onDragStart(e, data, index)}
+      onDragOver={e => this.onDragOver(e, { position: PositionTypes.INSIDE, index: index, item: data })}
+      onDrop={(e) => this.onDrop(e, { position: PositionTypes.INSIDE, index: index, item: data}, )}
+      onDragEnd={this.onDragEnd.bind(this)}
+      >
+      { this.props.children}
+        {/* <h1 className="text-center mt-3">Drag and Drop</h1>
 
         <div className="container">
           {this.props.data.map((item, index) => (
@@ -136,7 +151,8 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
+      </div>
       </>
     );
   }

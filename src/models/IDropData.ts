@@ -1,4 +1,7 @@
+import { PositionTypes } from "./enums/PositionTypes";
+
 export interface IDropData {
-    position: string;
-    item: Object
+    position: PositionTypes;
+    index: number;
+    item: any;
 }
