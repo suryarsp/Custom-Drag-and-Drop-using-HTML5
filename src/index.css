@@ -38,11 +38,7 @@ code {
 }
 
 .drag-top {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  height: 5px;
+  height: 15px;
   display: block;
   background-color: #fff1f1;
 }
@@ -62,11 +58,7 @@ code {
 }
 
 .drag-bottom {
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  height: 5px;
+  height: 15px;
   display: block;
   background-color: #ebfdeb;
 }
@@ -98,7 +90,7 @@ code {
   position: relative;
   display: flex;
   transition: all .3s ease;
-  height: 32px;
+  height: 52px;
   justify-content: space-between;
   align-items: center;
   border-width: 2px;

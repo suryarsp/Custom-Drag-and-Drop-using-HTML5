@@ -1,5 +1,3 @@
-
-
 import { DragDropHOC } from "../createHoc";
 import * as React from "react";
 import { Item, IDragOverData } from "../models";
@@ -8,18 +6,20 @@ import { IDragDropState } from "./IDragDropState";
 import { PositionTypes } from "../models/enums/PositionTypes";
 import { IDropData } from "../models/IDropData";
 
-
-let source : { index: number, data: any};
-let destination : { index: number, data: any};
+let source: { index: number; data: any } = null;
 class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
-  public tooltip = '';
+  public tooltip = "";
 
   constructor(props: IDragDropProps) {
     super(props);
     this.state = {
-      sourceDragTooltip : props.sourceDragTooltip ? props.sourceDragTooltip : 'Drag',
-      destionationDropTooltip: props.destionationDropTootip ? props.destionationDropTootip : 'into',
-      tooltip: ''
+      sourceDragTooltip: props.sourceDragTooltip
+        ? props.sourceDragTooltip
+        : "Drag",
+      destionationDropTooltip: props.destionationDropTootip
+        ? props.destionationDropTootip
+        : "into",
+      tooltip: ""
     };
   }
   public componentDidMount() {}
@@ -29,45 +29,57 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
       event.dataTransfer.dropEffect = "none";
     }
 
-    const { position , item} = data;
-    if(source.data['id'] === item['id']) {
+    const { position, item } = data;
+    console.log(source);
+    if (source.data["id"] === item["id"]) {
       return;
     }
-    this.setState({ tooltip: this.getTooltip(position, source, item) });
-    event.target.classList.add('active');
+    this.setState({ tooltip: this.getTooltip(position, source.data, item) });
+
+    // Add rules to show/hide the tooltip based on hovering the drop container
+
+
+    event.target.classList.add("active");
     event.preventDefault();
   }
 
-  private onDragStart(event: React.DragEvent<Element>, sourceData: any, sourceIndex: number) {
+  private onDragStart(
+    event: React.DragEvent<Element>,
+    sourceData: any,
+    sourceIndex: number
+  ) {
     source = {
       index: sourceIndex,
-      data: this.props.data
-    }
+      data: sourceData
+    };
     event.dataTransfer.setData("text/plain", JSON.stringify(sourceData));
     event.dataTransfer.effectAllowed = "move";
   }
 
-  private getTooltip(positionType: PositionTypes, source: any, destination: any) : string{
-    let tooltip = '';
-    const { sourceDragTooltip} = this.state;
+  private getTooltip(
+    positionType: PositionTypes,
+    source: any,
+    destination: any
+  ): string {
+    let tooltip = "";
+    const { sourceDragTooltip } = this.state;
 
-    switch(positionType) {
+    switch (positionType) {
+      case PositionTypes.TOP:
+        tooltip = `${sourceDragTooltip} ${source['TaskName']} above ${destination['TaskName']}`;
+        break;
 
-      case PositionTypes.TOP: 
-        tooltip = `${sourceDragTooltip} ${source.name} above ${destination.name}`;
-      break;
+      case PositionTypes.INSIDE:
+        tooltip = `${sourceDragTooltip} ${source['TaskName']} into ${destination['TaskName']}`;
+        break;
 
-      case PositionTypes.INSIDE : 
-        tooltip = `${sourceDragTooltip} ${source.name} into ${destination.name}`
-      break;
+      case PositionTypes.BELOW:
+        tooltip = `${sourceDragTooltip} ${source['TaskName']} below ${destination['TaskName']}`;
 
-      case PositionTypes.BELOW : 
-        tooltip = `${sourceDragTooltip} ${source.name} below ${destination.name}`
-      
-      break;
+        break;
 
-      default: 
-        tooltip = '';
+      default:
+        tooltip = "";
     }
     return tooltip;
   }
@@ -83,76 +95,94 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
   }
 
   private onDragEnd(e: any) {
-    console.log('Drag End');
+    console.log("Drag End");
     this.resetDefault();
-  }
-
-  private onDragLeave(e: any) {
-    
   }
 
   private resetDefault() {
     source = null;
-    destination = null;
+    this.setState({ tooltip: ''});
   }
 
   public render() {
-    const { data , index} = this.props;
+    const { data, index, columns } = this.props;
     return (
       <>
-      <div
-      id={data.id.toString()}
-      key={data.id}
-      draggable={this.props.isDragAllowed}
-      onDragStart={e => this.onDragStart(e, data, index)}
-      onDragOver={e => this.onDragOver(e, { position: PositionTypes.INSIDE, index: index, item: data })}
-      onDrop={(e) => this.onDrop(e, { position: PositionTypes.INSIDE, index: index, item: data}, )}
-      onDragEnd={this.onDragEnd.bind(this)}
-      >
-      { this.props.children}
-        {/* <h1 className="text-center mt-3">Drag and Drop</h1>
+        {/* Top Drop Container */}
 
-        <div className="container">
-          {this.props.data.map((item, index) => (
-            <div className="row"  key={item.id.toString()}>
-              <div className="col drag-item">
-                {index === 0 ? (
-                  <span
-                    className="drag-top"
-                    id={`top-${item.id}`}
-                    key={`top-${item.id}`}
-                    onDragOver={e => this.onDragOver(e, {position: PositionTypes.TOP, item})}
-                    onDrop={e => this.onDrop(e, { position: PositionTypes.TOP, item})}
-                  >
-                    <span className="drag-over">{this.state.tooltip}</span>
-                  </span>
-                ) : null}
-                <span
-                  className="drag-item-inner"
-                  key={item.id.toString()}
-                  id={item.id.toString()}
-                  onDragStart={e => this.onDragStart(e, item)}
-                  draggable={this.props.isDragAllowed}
-                  onDragOver={e => this.onDragOver(e,{ position: PositionTypes.INSIDE, item})}
-                  onDrop={e => this.onDrop(e, { position: PositionTypes.INSIDE, item})}
-                  onDragEnd={this.onDragEnd.bind(this)}
-                >
-                  {item.name}
-                  <span className="drag-over">{this.state.tooltip}</span>
-                </span>
-                  <span
-                    className="drag-bottom"
-                    key={`bottom-${item.id}`}
-                    onDragOver={e => this.onDragOver(e, { position: PositionTypes.BELOW, item})}
-                    onDrop={e => this.onDrop(e, { position: PositionTypes.BELOW, item})}
-                  >
-                    <span className="drag-over">{this.state.tooltip}</span>
-                  </span>
-              </div>
-            </div>
+        {index === 0 && (
+          <tr
+            className="drag-top drag-over"
+            id={`top-${data.id}`}
+            key={`top-${data.id}`}
+            onDragOver={e =>
+              this.onDragOver(e, {
+                position: PositionTypes.TOP,
+                index: index,
+                item: data
+              })
+            }
+            onDrop={e =>
+              this.onDrop(e, {
+                position: PositionTypes.TOP,
+                index: index,
+                item: data
+              })
+            }
+          >
+            <td  colSpan={columns.length - 1}>{this.state.tooltip}</td>
+          </tr>
+        )}
+
+        {/* Content */}
+        <tr
+          className="gridRow"
+          id={data.id}
+          key={data.id}
+          draggable={this.props.isDragAllowed}
+          onDragStart={e => this.onDragStart(e, data, index)}
+          onDragOver={e =>
+            this.onDragOver(e, {
+              position: PositionTypes.INSIDE,
+              index: index,
+              item: data
+            })
+          }
+          onDrop={e =>
+            this.onDrop(e, {
+              position: PositionTypes.INSIDE,
+              index: index,
+              item: data
+            })
+          }
+          onDragEnd={this.onDragEnd.bind(this)}
+        >
+          {columns.map(col => (
+            <td key={col.name} className="gridCell">{data[col.name]}</td>
           ))}
-        </div> */}
-      </div>
+        </tr>
+
+        {/* Bottom Drop Container */}
+        <tr
+          className="drag-bottom drag-over"
+          key={`bottom-${data.id}`}
+          onDragOver={e =>
+            this.onDragOver(e, {
+              position: PositionTypes.BELOW,
+              index: index,
+              item: data
+            })
+          }
+          onDrop={e =>
+            this.onDrop(e, {
+              position: PositionTypes.BELOW,
+              index: index,
+              item: data
+            })
+          }
+        >
+          <td colSpan={columns.length - 1}>{this.state.tooltip}</td>
+        </tr>
       </>
     );
   }
