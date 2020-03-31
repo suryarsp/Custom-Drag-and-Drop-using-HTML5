@@ -24,13 +24,12 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
   }
   public componentDidMount() {}
 
-  private onDragOver(event: any, data: IDragOverData) {
+  private onDragOver(event: any, data: IDragOverData, elementId : string) {
     if (!this.props.isDropAllowed) {
       event.dataTransfer.dropEffect = "none";
     }
 
     const { position, item } = data;
-    console.log(source);
     if (source.data["id"] === item["id"]) {
       return;
     }
@@ -42,17 +41,18 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
       for(let i = 0; i < activeTooltips.length; i++) {
         activeTooltips[i].classList.remove('active');
       } 
-      if(event.target.nextSibling) {
-        if(event.target.nextSibling.classList.contains('drag-top') ||
-        event.target.nextSibling.classList.contains('drag-item-inner') || 
-        event.target.nextSibling.classList.contains('drag-bottom'))
-        event.target.nextSibling.classList.add("active");
+
+      const container = document.getElementById(elementId);
+      if(container) {
+        if(!container.classList.contains('active')) {
+          container.classList.add('active');
+        }
       }
     event.preventDefault();
   }
 
   private onDragStart(
-    event: React.DragEvent<Element>,
+    event: any,
     sourceData: any,
     sourceIndex: number
   ) {
@@ -71,18 +71,19 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
   ): string {
     let tooltip = "";
     const { sourceDragTooltip } = this.state;
+    const { tooltipProperty } = this.props;
 
     switch (positionType) {
       case PositionTypes.TOP:
-        tooltip = `${sourceDragTooltip} ${source['TaskName']} above ${destination['TaskName']}`;
+        tooltip = `${sourceDragTooltip} ${source[tooltipProperty]} above ${destination[tooltipProperty]}`;
         break;
 
       case PositionTypes.INSIDE:
-        tooltip = `${sourceDragTooltip} ${source['TaskName']} into ${destination['TaskName']}`;
+        tooltip = `${sourceDragTooltip} ${source[tooltipProperty]} into ${destination[tooltipProperty]}`;
         break;
 
       case PositionTypes.BELOW:
-        tooltip = `${sourceDragTooltip} ${source['TaskName']} below ${destination['TaskName']}`;
+        tooltip = `${sourceDragTooltip} ${source[tooltipProperty]} below ${destination[tooltipProperty]}`;
 
         break;
 
@@ -133,7 +134,8 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
                 position: PositionTypes.TOP,
                 index: index,
                 item: data
-              })
+              },
+              `top-${data.id}`)
             }
             onDrop={e =>
               this.onDrop(e, {
@@ -148,9 +150,9 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
         )}
 
         {/* Content */}
-        <tr
+        <div
           className="gridRow drag-item-inner"
-          id={data.id}
+          id={`inside-${data.id}`}
           key={data.id}
           draggable={this.props.isDragAllowed}
           onDragStart={e => this.onDragStart(e, data, index)}
@@ -159,7 +161,7 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
               position: PositionTypes.INSIDE,
               index: index,
               item: data
-            })
+            }, `inside-${data.id}`)
           }
           onDrop={e =>
             this.onDrop(e, {
@@ -183,18 +185,19 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
               </td>
           ))}
           
-        </tr>
+        </div>
 
         {/* Bottom Drop Container */}
         <tr
           className="drag-bottom"
+          id={`bottom-${data.id}`}
           key={`bottom-${data.id}`}
           onDragOver={e =>
             this.onDragOver(e, {
               position: PositionTypes.BELOW,
               index: index,
               item: data
-            })
+            }, `bottom-${data.id}`)
           }
           onDrop={e =>
             this.onDrop(e, {

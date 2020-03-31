@@ -9,5 +9,6 @@ export interface IDragDropProps {
     destionationDropTootip: string;
     index: number;
     columns : IColumn[];
+    tooltipProperty: string;
     onDrop: (source: any, destination: any) => void;
   }

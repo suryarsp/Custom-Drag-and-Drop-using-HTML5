@@ -32,6 +32,7 @@ class App extends React.Component {
                   sourceDragTooltip="Move"
                   destionationDropTootip="to"
                   onDrop={(s,d) => console.log(s, d)}
+                  tooltipProperty="TaskName"
                 >
                 </DragDrop>
               ))
