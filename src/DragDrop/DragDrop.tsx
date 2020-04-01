@@ -121,7 +121,7 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
   public render() {
     const { data, index } = this.props;
     return (
-            <div className="row"  key={data.id.toString()}>
+            <div className="row gridRow"  key={data.id.toString()}>
               <div className="col drag-item">
                 {index === 0 ? (
                   <span
@@ -148,7 +148,7 @@ class DragDrop extends React.Component<IDragDropProps, IDragDropState> {
                   </span>
                 ) : null}
                 <span
-                  className="gridRow drag-item-inner"
+                  className="drag-item-inner"
                   id={`inside-${data.id}`}
                   key={data.id}
                   draggable={this.props.isDragAllowed}

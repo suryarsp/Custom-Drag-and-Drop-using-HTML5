@@ -9,6 +9,7 @@ class App extends React.Component {
     return (
      
       <div className="container">
+        <h3 className="text-center">Drag and Drop</h3>
       {
       mockItems.map((item, index) => (
         <DragDrop
