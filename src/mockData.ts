@@ -1,7 +1,3 @@
-import { Item } from "./models";
-import { IColumn } from "./models/IColumn";
-
-
 export const mockItems: any[] = [
     {
         id: 1,
@@ -43,33 +39,4 @@ export const mockItems: any[] = [
         Doc: 3,
         Com: 1
     },
-    
-    
-]
-
-export const mockColumns : IColumn[] = [
-    {
-        id: 1,
-        name: 'id'
-    },
-    {
-        id: 2,
-        name: 'TaskName'
-    },
-    {
-        id: 3,
-        name: 'ResponsibleParty'
-    },
-    {
-        id: 4,
-        name: 'LastUpdated'
-    },
-    {
-        id: 5,
-        name: 'Doc'
-    },
-    {
-        id: 6,
-        name: 'Com'
-    }
 ]
